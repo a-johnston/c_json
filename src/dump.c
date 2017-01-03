@@ -4,6 +4,26 @@
 
 #include "json.h"
 
+static char *to_string_num(json_object json) {
+
+}
+
+static char *to_string_string(json_object json) {
+
+}
+
+static char *to_string_vector(json_object json) {
+
+}
+
+static char *to_string_map(json_object json) {
+
+}
+
+static char *to_string(json_object json) {
+    
+}
+
 int json_dump(char *filename, json_object json) {
     char *buffer = json_dumps(json);
     FILE *f = fopen(filename, "w");
@@ -19,8 +39,16 @@ int json_dump(char *filename, json_object json) {
 }
 
 char *json_dumps(json_object json) {
-    (void) json;
-    return "IMPLEMENT ME PLS";
+    switch (json.type) {
+        case NUL:       return "null";
+        case NUM:       return to_string_num(json);
+        case BOOL:      return json.value ? "true" : "false";
+        case STRING:    return to_string_string(json);
+        case VECTOR:    return to_string_vector(json);
+        case MAP:       return to_string_map(json);
+    }
+
+    return "";
 }
 
 #endif

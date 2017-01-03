@@ -3,6 +3,7 @@
 #define __CJSON_H
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -12,9 +13,8 @@
 
 enum JSON_TYPE {
     NUL = 0,
-    INT,
+    NUM,
     BOOL,
-    REAL,
     STRING,
     VECTOR,
     MAP,
@@ -78,5 +78,21 @@ int map_contains(Map *map, char *key);
 json_object *map_get(Map *map, char *key);
 
 void map_remove(Map *map, char *key);
+
+/*
+ * load.c
+ */
+
+json_object json_load(char *filename);
+
+json_object json_loads(char *string);
+
+/*
+ * dump.c
+ */
+
+int json_dump(char *filename, json_object json);
+
+char *json_dumps(json_object json);
 
 #endif

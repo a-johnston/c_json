@@ -2,6 +2,7 @@
 
 #define __CJSON_H
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -10,19 +11,21 @@
  */
 
 enum JSON_TYPE {
-    INT = 0,
-    FLOAT,
+    NUL = 0,
+    INT,
+    BOOL,
+    REAL,
     STRING,
     VECTOR,
     MAP,
-    NUM_TYPES
+    NUM_TYPES,
 };
 
 typedef int JSON_TYPE;
 
 typedef struct {
     JSON_TYPE type;
-    void *value;
+    uint_fast64_t value;
 } json_object;
 
 /*
@@ -31,6 +34,7 @@ typedef struct {
 
 typedef struct {
     json_object *data;
+    int element_size;
     int capacity;
     int length;
 } Vector;
@@ -41,16 +45,38 @@ void vector_free(Vector *vector);
 
 void vector_clear(Vector *vector);
 
-int vector_add(Vector *vector, json_object *e);
+int vector_add(Vector *vector, void *e);
 
 void vector_add_all(Vector *vector, Vector *toAdd);
 
-void vector_insert(Vector *vector, json_object *e, int i);
+void vector_insert(Vector *vector, void *e, int i);
 
 void vector_remove(Vector *vector, int i);
 
-void vector_set(Vector *vector, json_object *e, int i);
+void *vector_get(Vector *vector, int i);
 
-json_object *vector_get(Vector *vector, int i);
+void vector_set(Vector *vector, void *e, int i);
+
+/*
+ * map.c
+ */
+
+typedef struct {
+    Vector *data;
+} Map;
+
+Map *map_create();
+
+void map_free(Map *map);
+
+void map_clear(Map *map);
+
+void map_put(Map *map, char *key, json_object value);
+
+int map_contains(Map *map, char *key);
+
+json_object *map_get(Map *map, char *key);
+
+void map_remove(Map *map, char *key);
 
 #endif

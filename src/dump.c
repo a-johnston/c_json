@@ -5,23 +5,23 @@
 #include "json.h"
 
 static char *to_string_num(json_object json) {
-
+    (void) json;
+    return "";
 }
 
 static char *to_string_string(json_object json) {
-
+    (void) json;
+    return "";
 }
 
 static char *to_string_vector(json_object json) {
-
+    (void) json;
+    return "";
 }
 
 static char *to_string_map(json_object json) {
-
-}
-
-static char *to_string(json_object json) {
-    
+    (void) json;
+    return "";
 }
 
 int json_dump(char *filename, json_object json) {

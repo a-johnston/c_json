@@ -80,6 +80,24 @@ json_object *map_get(Map *map, char *key);
 void map_remove(Map *map, char *key);
 
 /*
+ * strbuf.c
+ */
+
+typedef struct {
+    char *str;
+    int capacity;
+    int length;
+} Strbuf;
+
+Strbuf *strbuf_create();
+
+void strbuf_free(Strbuf *buf);
+
+int strbuf_add(Strbuf *buf, char *str);
+
+int strbuf_addc(Strbuf *buf, char c);
+
+/*
  * load.c
  */
 

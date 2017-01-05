@@ -4,24 +4,67 @@
 
 #include "json.h"
 
-static char *to_string_num(json_object json) {
-    (void) json;
-    return "";
+static void buffer_json(Strbuf *buf, json_object json);
+
+static void buffer_num(Strbuf *buf, json_object json) {
+    double d = *(double*)(&json.value);
 }
 
-static char *to_string_string(json_object json) {
-    (void) json;
-    return "";
+static void buffer_string(Strbuf *buf, json_object json) {
+    char *str = (char*) json.value;
+
+    strbuf_addc(buf, '"');
+    while (str) {
+        // TODO: expand this to actually deal with UTF8
+        if (*str == '"') {
+            strbuf_addc(buf, '\\');
+        }
+        strbuf_addc(buf, *str++);
+    }
+    strbuf_addc(buf, '"');
 }
 
-static char *to_string_vector(json_object json) {
-    (void) json;
-    return "";
+static void buffer_vector(Strbuf *buf, json_object json) {
+    strbuf_addc(buf, '[');
+
+    Vector *v = (Vector*) json.value;
+
+    for (int i = 0; i < v->length; i++) {
+        json_object e = *(json_object*) vector_get(v, i);
+        buffer_json(buf, e);
+
+        if (i != v->length - 1) {
+            strbuf_addc(buf, ',');
+        }
+    }
+
+    strbuf_addc(buf, ']');
 }
 
-static char *to_string_map(json_object json) {
-    (void) json;
-    return "";
+static void buffer_map(Strbuf *buf, json_object json) {
+}
+
+static void buffer_json(Strbuf *buf, json_object json) {
+    switch (json.type) {
+        case NUL:
+            strbuf_adds(buf, "null");
+            break;
+        case NUM:
+            buffer_num(buf, json);
+            break;
+        case BOOL:
+            strbuf_adds(buf, json.value ? "true" : "false");
+            break;
+        case STRING:
+            buffer_string(buf, json);
+            break;
+        case VECTOR:
+            buffer_vector(buf, json);
+            break;
+        case MAP:
+            buffer_map(buf, json);
+            break;
+    }
 }
 
 int json_dump(char *filename, json_object json) {
@@ -34,21 +77,20 @@ int json_dump(char *filename, json_object json) {
 
     int r = fputs(buffer, f);
     r |= fclose(f);
+    free(buffer);
 
     return r == EOF ? 0 : 1;
 }
 
 char *json_dumps(json_object json) {
-    switch (json.type) {
-        case NUL:       return "null";
-        case NUM:       return to_string_num(json);
-        case BOOL:      return json.value ? "true" : "false";
-        case STRING:    return to_string_string(json);
-        case VECTOR:    return to_string_vector(json);
-        case MAP:       return to_string_map(json);
-    }
+    Strbuf *buf = strbuf_create();
 
-    return "";
+    buffer_json(buf, json);
+
+    char *str = buf->str;
+    free(buf);
+
+    return str;
 }
 
 #endif

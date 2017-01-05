@@ -25,7 +25,7 @@ static int ensure_capacity(Strbuf *buf, int length) {
     if (buf->capacity < length) {
         // TODO: consider alt allocation strategies
         char *temp = realloc(buf->str, (length + 1) * sizeof(char));
-        
+
         if (temp) {
             buf->str = temp;
             buf->capacity = length + 1;
@@ -37,7 +37,7 @@ static int ensure_capacity(Strbuf *buf, int length) {
     return 1;
 }
 
-int strbuf_add(Strbuf *buf, char *str) {
+int strbuf_adds(Strbuf *buf, char *str) {
     int length = strlen(str);
 
     if (!ensure_capacity(buf, buf->length + length + 1)) {

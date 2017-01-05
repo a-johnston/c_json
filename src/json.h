@@ -93,7 +93,7 @@ Strbuf *strbuf_create();
 
 void strbuf_free(Strbuf *buf);
 
-int strbuf_add(Strbuf *buf, char *str);
+int strbuf_adds(Strbuf *buf, char *str);
 
 int strbuf_addc(Strbuf *buf, char c);
 

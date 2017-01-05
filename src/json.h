@@ -29,6 +29,14 @@ typedef struct {
 } json_object;
 
 /*
+ * pack.c
+ */
+
+json_object num_to_json(double d);
+
+double json_to_num(json_object json);
+
+/*
  * vector.c
  */
 

@@ -8,6 +8,8 @@ static void buffer_json(Strbuf *buf, json_object json);
 
 static void buffer_num(Strbuf *buf, json_object json) {
     double d = *(double*)(&json.value);
+    (void) buf;
+    (void) d;
 }
 
 static void buffer_string(Strbuf *buf, json_object json) {
@@ -42,6 +44,8 @@ static void buffer_vector(Strbuf *buf, json_object json) {
 }
 
 static void buffer_map(Strbuf *buf, json_object json) {
+    (void) buf;
+    (void) json;
 }
 
 static void buffer_json(Strbuf *buf, json_object json) {

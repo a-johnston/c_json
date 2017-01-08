@@ -18,17 +18,26 @@ static void _ensure_capacity(Vector *vector, int capacity) {
     }
 }
 
+static void default_free(void *e) {
+    json_free(*(json_object*) e);
+}
+
 Vector *vector_create() {
     Vector *vector = (Vector*) malloc(sizeof(Vector));
     vector->data = calloc(10, sizeof(json_object));
     vector->element_size = sizeof(json_object);
     vector->capacity = 10;
     vector->length = 0;
+    vector->free_strategy = default_free;
 
     return vector;
 }
 
 void vector_free(Vector *vector) {
+    for (int i = 0; i < vector->length; i++) {
+        vector->free_strategy(vector_get(vector, i));
+    }
+
     free(vector->data);
     free(vector);
 }

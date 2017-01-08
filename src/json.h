@@ -32,11 +32,14 @@ typedef struct {
  * vector.c
  */
 
+typedef void (*_vec_free_element_impl)(void *e);
+
 typedef struct {
     json_object *data;
     int element_size;
     int capacity;
     int length;
+    _vec_free_element_impl free_strategy;
 } Vector;
 
 Vector *vector_create();
@@ -69,8 +72,6 @@ Map *map_create();
 
 void map_free(Map *map);
 
-void map_clear(Map *map);
-
 void map_put(Map *map, char *key, json_object value);
 
 int map_contains(Map *map, char *key);
@@ -102,6 +103,8 @@ int strbuf_addc(Strbuf *buf, char c);
 /*
  * pack.c
  */
+
+void json_free(json_object json);
 
 json_object pack_num(double d);
 

@@ -9,6 +9,12 @@ typedef struct {
     json_object value;
 } map_element;
 
+static void map_element_free(void *e) {
+    map_element pair = *(map_element*) e;
+    free(pair.key);
+    json_free(pair.value);
+}
+
 Map *map_create() {
     Map *map = (Map*) malloc(sizeof(Map));
 
@@ -18,21 +24,14 @@ Map *map_create() {
     map->data->capacity = 10;
     map->data->length = 0;
 
+    map->data->free_strategy = map_element_free;
+
     return map;
 }
 
 void map_free(Map *map) {
-    free(map->data);
+    vector_free(map->data);
     free(map);
-}
-
-void map_clear(Map *map) {
-    for (int i = 0; i < map->data->length; i++) {
-        map_element *e = vector_get(map->data, i);
-        free(e->key);
-    }
-
-    vector_clear(map->data);
 }
 
 void map_put(Map *map, char *key, json_object value) {

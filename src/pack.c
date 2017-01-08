@@ -4,6 +4,20 @@
 
 #include "json.h"
 
+void json_free(json_object json) {
+    if (json.type == STRING) {
+        free((void*) json.value);
+    }
+
+    if (json.type == VECTOR) {
+        vector_free((Vector*) json.value);
+    }
+
+    if (json.type == MAP) {
+        map_free((Map*) json.value);
+    }
+}
+
 // Packing
 
 json_object pack_num(double d) {

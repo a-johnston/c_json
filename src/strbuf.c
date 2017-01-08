@@ -21,6 +21,18 @@ void strbuf_free(Strbuf *buf) {
     free(buf);
 }
 
+char *strbuf_to_str(Strbuf *buf) {
+    char *str = buf->str;
+    
+    if (buf->capacity > buf->length + 1) {
+        str = realloc(buf->str, (buf->length + 1) * sizeof(char));
+        str[buf->length] = '\0';
+    }
+
+    free(buf);
+    return str;
+}
+
 static int ensure_capacity(Strbuf *buf, int length) {
     if (buf->capacity < length) {
         // TODO: consider alt allocation strategies

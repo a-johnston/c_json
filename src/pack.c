@@ -4,12 +4,32 @@
 
 #include "json.h"
 
-json_object num_to_json(double d) {
+// Packing
+
+json_object pack_num(double d) {
     return (json_object) { NUM, *(uint_fast64_t*) &d };
 }
 
-double json_to_num(json_object json) {
+json_object pack_str(char *str) {
+    return (json_object) { STRING, (uint_fast64_t) str };
+}
+
+json_object pack_vec(Vector *vec) {
+    return (json_object) { VECTOR, (uint_fast64_t) vec };
+}
+
+// Unpacking
+
+double unpack_num(json_object json) {
     return *(double*)&json.value;
+}
+
+char *unpack_str(json_object json) {
+    return (char*) json.value;
+}
+
+Vector *unpack_vec(json_object json) {
+    return (Vector*) json.value;
 }
 
 #endif

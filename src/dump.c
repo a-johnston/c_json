@@ -88,13 +88,8 @@ int json_dump(char *filename, json_object json) {
 
 char *json_dumps(json_object json) {
     Strbuf *buf = strbuf_create();
-
     buffer_json(buf, json);
-
-    char *str = buf->str;
-    free(buf);
-
-    return str;
+    return strbuf_to_str(buf);
 }
 
 #endif

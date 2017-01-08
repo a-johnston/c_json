@@ -29,14 +29,6 @@ typedef struct {
 } json_object;
 
 /*
- * pack.c
- */
-
-json_object num_to_json(double d);
-
-double json_to_num(json_object json);
-
-/*
  * vector.c
  */
 
@@ -101,9 +93,27 @@ Strbuf *strbuf_create();
 
 void strbuf_free(Strbuf *buf);
 
+char *strbuf_to_str(Strbuf *buf);
+
 int strbuf_adds(Strbuf *buf, char *str);
 
 int strbuf_addc(Strbuf *buf, char c);
+
+/*
+ * pack.c
+ */
+
+json_object pack_num(double d);
+
+json_object pack_str(char *str);
+
+json_object pack_vec(Vector *vec);
+
+double unpack_num(json_object json);
+
+char *unpack_str(json_object json);
+
+Vector *unpack_vec(json_object json);
 
 /*
  * load.c

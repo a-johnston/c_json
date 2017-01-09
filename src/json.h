@@ -13,7 +13,8 @@
 
 enum JSON_TYPE {
     NUL = 0,
-    NUM,
+    INT,
+    DOUBLE,
     BOOL,
     STRING,
     VECTOR,
@@ -106,13 +107,17 @@ int strbuf_addc(Strbuf *buf, char c);
 
 void json_free(json_object json);
 
-json_object pack_num(double d);
+json_object pack_int(uint_fast64_t i);
+
+json_object pack_double(double d);
 
 json_object pack_str(char *str);
 
 json_object pack_vec(Vector *vec);
 
-double unpack_num(json_object json);
+uint_fast64_t unpack_int(json_object json);
+
+double unpack_double(json_object json);
 
 char *unpack_str(json_object json);
 

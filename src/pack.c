@@ -20,8 +20,12 @@ void json_free(json_object json) {
 
 // Packing
 
-json_object pack_num(double d) {
-    return (json_object) { NUM, *(uint_fast64_t*) &d };
+json_object pack_int(uint_fast64_t i) {
+    return (json_object) { INT, i };
+}
+
+json_object pack_double(double d) {
+    return (json_object) { DOUBLE, *(uint_fast64_t*) &d };
 }
 
 json_object pack_str(char *str) {
@@ -34,7 +38,11 @@ json_object pack_vec(Vector *vec) {
 
 // Unpacking
 
-double unpack_num(json_object json) {
+uint_fast64_t unpack_int(json_object json) {
+    return json.value;
+}
+
+double unpack_double(json_object json) {
     return *(double*)&json.value;
 }
 

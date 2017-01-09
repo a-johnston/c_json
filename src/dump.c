@@ -6,18 +6,24 @@
 
 static void buffer_json(Strbuf *buf, json_object json);
 
-static void buffer_num(Strbuf *buf, json_object json) {
-    double d = *(double*)(&json.value);
+static void buffer_int(Strbuf *buf, json_object json) {
+    int i = unpack_int(json);
+    (void) buf;
+    (void) i;
+}
+
+static void buffer_double(Strbuf *buf, json_object json) {
+    double d = unpack_double(json);
     (void) buf;
     (void) d;
 }
 
 static void buffer_string(Strbuf *buf, json_object json) {
-    char *str = (char*) json.value;
+    char *str = unpack_str(json);
 
     strbuf_addc(buf, '"');
     while (str) {
-        // TODO: expand this to actually deal with UTF8
+        // TODO: expand this to actually deal with UTF8 and escaped chars
         if (*str == '"') {
             strbuf_addc(buf, '\\');
         }
@@ -29,7 +35,7 @@ static void buffer_string(Strbuf *buf, json_object json) {
 static void buffer_vector(Strbuf *buf, json_object json) {
     strbuf_addc(buf, '[');
 
-    Vector *v = (Vector*) json.value;
+    Vector *v = unpack_vec(json);
 
     for (int i = 0; i < v->length; i++) {
         json_object e = *(json_object*) vector_get(v, i);
@@ -53,8 +59,11 @@ static void buffer_json(Strbuf *buf, json_object json) {
         case NUL:
             strbuf_adds(buf, "null");
             break;
-        case NUM:
-            buffer_num(buf, json);
+        case INT:
+            buffer_int(buf, json);
+            break;
+        case DOUBLE:
+            buffer_double(buf, json);
             break;
         case BOOL:
             strbuf_adds(buf, json.value ? "true" : "false");

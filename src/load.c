@@ -34,9 +34,10 @@ static json_object loads_num(char **string) {
 
     if (d) {
         value /= d;
+        return pack_double(value);
     }
 
-    return pack_num(value);
+    return pack_int(value);
 }
 
 static json_object loads_string(char **string) {

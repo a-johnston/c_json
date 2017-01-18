@@ -6,23 +6,41 @@
 
 static void buffer_json(Strbuf *buf, json_object json);
 
-static void buffer_int(Strbuf *buf, json_object json) {
-    int i = unpack_int(json);
-    (void) buf;
-    (void) i;
+static void buffer_int(Strbuf *buf, uint_fast64_t i) {
+    Strbuf *ibuf = strbuf_create();
+
+    while(i) {
+        int d = i % 10;
+        strbuf_addc(ibuf, '0' + d);
+        i /= 10;
+    }
+
+    strbuf_reverse(ibuf);
+    strbuf_addsb(buf, ibuf);
+    strbuf_free(ibuf);
 }
 
-static void buffer_double(Strbuf *buf, json_object json) {
-    double d = unpack_double(json);
-    (void) buf;
-    (void) d;
+static void buffer_double(Strbuf *buf, double d) {
+    uint_fast64_t i = (uint_fast64_t) d;
+
+    buffer_int(buf, i);
+    strbuf_addc(buf, '.');
+
+    d = d - i;
+
+    while (d < 100000000 && d - (int) d != 0.0) {
+        d *= 10;
+        i = ((int) d) % 10;
+
+        printf("%f %d\n", d - ((int) d), (d - (int) d) == 0.0);
+
+        strbuf_addc(buf, '0' + i);
+    }
 }
 
-static void buffer_string(Strbuf *buf, json_object json) {
-    char *str = unpack_str(json);
-
+static void buffer_string(Strbuf *buf, char *str) {
     strbuf_addc(buf, '"');
-    while (str) {
+    while (*str) {
         // TODO: expand this to actually deal with UTF8 and escaped chars
         if (*str == '"') {
             strbuf_addc(buf, '\\');
@@ -32,10 +50,8 @@ static void buffer_string(Strbuf *buf, json_object json) {
     strbuf_addc(buf, '"');
 }
 
-static void buffer_vector(Strbuf *buf, json_object json) {
+static void buffer_vector(Strbuf *buf, Vector *v) {
     strbuf_addc(buf, '[');
-
-    Vector *v = unpack_vec(json);
 
     for (int i = 0; i < v->length; i++) {
         json_object e = *(json_object*) vector_get(v, i);
@@ -49,9 +65,27 @@ static void buffer_vector(Strbuf *buf, json_object json) {
     strbuf_addc(buf, ']');
 }
 
-static void buffer_map(Strbuf *buf, json_object json) {
-    (void) buf;
-    (void) json;
+static void buffer_map(Strbuf *buf, Map *map) {
+    strbuf_addc(buf, '{');
+
+    map_iter iter = map_iter_init(map);
+
+    int comma = 0;
+
+    while (map_next(&iter)) {
+        if (comma) {
+            strbuf_addc(buf, ',');
+        } else {
+            comma = 1;
+        }
+
+        buffer_string(buf, iter.key);
+        strbuf_addc(buf, ':');
+        buffer_json(buf, iter.value);
+    }
+
+    strbuf_addc(buf, '}');
+    (void) map;
 }
 
 static void buffer_json(Strbuf *buf, json_object json) {
@@ -60,22 +94,22 @@ static void buffer_json(Strbuf *buf, json_object json) {
             strbuf_adds(buf, "null");
             break;
         case INT:
-            buffer_int(buf, json);
+            buffer_int(buf, unpack_int(json));
             break;
         case DOUBLE:
-            buffer_double(buf, json);
+            buffer_double(buf, unpack_double(json));
             break;
         case BOOL:
             strbuf_adds(buf, json.value ? "true" : "false");
             break;
         case STRING:
-            buffer_string(buf, json);
+            buffer_string(buf, unpack_str(json));
             break;
         case VECTOR:
-            buffer_vector(buf, json);
+            buffer_vector(buf, unpack_vec(json));
             break;
         case MAP:
-            buffer_map(buf, json);
+            buffer_map(buf, unpack_map(json));
             break;
     }
 }

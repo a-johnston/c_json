@@ -36,6 +36,10 @@ json_object pack_vec(Vector *vec) {
     return (json_object) { VECTOR, (uint_fast64_t) vec };
 }
 
+json_object pack_map(Map *map) {
+    return (json_object) { MAP, (uint_fast64_t) map };
+}
+
 // Unpacking
 
 uint_fast64_t unpack_int(json_object json) {
@@ -52,6 +56,10 @@ char *unpack_str(json_object json) {
 
 Vector *unpack_vec(json_object json) {
     return (Vector*) json.value;
+}
+
+Map *unpack_map(json_object json) {
+    return (Map*) json.value;
 }
 
 #endif

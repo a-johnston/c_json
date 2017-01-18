@@ -50,7 +50,7 @@ void map_put(Map *map, char *key, json_object value) {
     }
 }
 
-/* 
+/*
  * Returns whether or not the given key is present in the given map instance.
  * If the key is not present, 0 is returned. If it is present, the index + 1 is
  * returned. In the case that this is updated to not secretly be a vector, the
@@ -81,6 +81,29 @@ void map_remove(Map *map, char *key) {
         free(e->key);
 
         vector_remove(map->data, i - 1);
+    }
+}
+
+map_iter map_iter_init(Map *map) {
+    return (map_iter) {
+        map,
+        0,
+        NULL,
+        (json_object) { 0, 0 }
+    };
+}
+
+int map_next(map_iter *iter) {
+    if (iter->__i < iter->__map->data->length) {
+        map_element *e = vector_get(iter->__map->data, iter->__i);
+
+        iter->key = e->key;
+        iter->value = e->value;
+
+        iter->__i++;
+        return 1;
+    } else {
+        return 0;
     }
 }
 

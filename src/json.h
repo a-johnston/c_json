@@ -69,6 +69,14 @@ typedef struct {
     Vector *data;
 } Map;
 
+typedef struct {
+    Map *__map;
+    int __i;
+
+    char *key;
+    json_object value;
+} map_iter;
+
 Map *map_create();
 
 void map_free(Map *map);
@@ -80,6 +88,10 @@ int map_contains(Map *map, char *key);
 json_object *map_get(Map *map, char *key);
 
 void map_remove(Map *map, char *key);
+
+map_iter map_iter_init(Map *map);
+
+int map_next(map_iter *iter);
 
 /*
  * strbuf.c
@@ -99,7 +111,13 @@ char *strbuf_to_str(Strbuf *buf);
 
 int strbuf_adds(Strbuf *buf, char *str);
 
+int strbuf_addsb(Strbuf *buf, Strbuf *toAdd);
+
+int strbuf_addsn(Strbuf *buf, char *str, int n);
+
 int strbuf_addc(Strbuf *buf, char c);
+
+void strbuf_reverse(Strbuf *buf);
 
 /*
  * pack.c
@@ -115,6 +133,8 @@ json_object pack_str(char *str);
 
 json_object pack_vec(Vector *vec);
 
+json_object pack_map(Map *map);
+
 uint_fast64_t unpack_int(json_object json);
 
 double unpack_double(json_object json);
@@ -122,6 +142,8 @@ double unpack_double(json_object json);
 char *unpack_str(json_object json);
 
 Vector *unpack_vec(json_object json);
+
+Map *unpack_map(json_object json);
 
 /*
  * load.c

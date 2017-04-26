@@ -1,6 +1,6 @@
-#ifndef __C_JSON_VECTOR
+#ifndef __C_JSON_LOAD
 
-#define __C_JSON_VECTOR
+#define __C_JSON_LOAD
 
 #include "json.h"
 
@@ -41,8 +41,6 @@ static json_object loads_num(char **string) {
 }
 
 static json_object loads_string(char **string) {
-    (void) string;
-
     Strbuf *buf = strbuf_create();
 
     int needs = 2;
@@ -93,8 +91,29 @@ static json_object loads_vector(char **string) {
 }
 
 static json_object loads_map(char **string) {
-    (void) string;
-    return (json_object) { NUL, 1 };
+    if (**string != '{') {
+        // sanity check
+        (*string)++;
+        return (json_object) { NUL, 1 };
+    }
+
+    Map *m = map_create();
+
+    while (*(*string)++ != '}') {
+        consume_whitespace(string);
+        char *key = unpack_str(loads_string(string));
+        consume_whitespace(string);
+        if (*(*string)++ != ':') {
+            break;
+        }
+        consume_whitespace(string);
+        json_object val = _json_loads(string);
+        consume_whitespace(string);
+
+        map_put(m, key, val);
+    }
+
+    return pack_map(m);
 }
 
 json_object json_load(char *filename) {

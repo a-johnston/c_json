@@ -1,6 +1,6 @@
-#ifndef __C_JSON_VECTOR
+#ifndef __C_JSON_PACK
 
-#define __C_JSON_VECTOR
+#define __C_JSON_PACK
 
 #include "json.h"
 

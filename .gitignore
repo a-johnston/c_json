@@ -9,3 +9,4 @@ include/*
 lib/*
 CMakeCache.txt
 CMakeFiles/*
+test

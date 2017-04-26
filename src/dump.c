@@ -1,41 +1,21 @@
-#ifndef __C_JSON_VECTOR
+#ifndef __C_JSON_DUMP
 
-#define __C_JSON_VECTOR
+#define __C_JSON_DUMP
 
 #include "json.h"
 
 static void buffer_json(Strbuf *buf, json_object json);
 
 static void buffer_int(Strbuf *buf, uint_fast64_t i) {
-    Strbuf *ibuf = strbuf_create();
-
-    while(i) {
-        int d = i % 10;
-        strbuf_addc(ibuf, '0' + d);
-        i /= 10;
-    }
-
-    strbuf_reverse(ibuf);
-    strbuf_addsb(buf, ibuf);
-    strbuf_free(ibuf);
+    char str[80];
+    sprintf(str, "%ld", i);
+    strbuf_adds(buf, str);
 }
 
 static void buffer_double(Strbuf *buf, double d) {
-    uint_fast64_t i = (uint_fast64_t) d;
-
-    buffer_int(buf, i);
-    strbuf_addc(buf, '.');
-
-    d = d - i;
-
-    while (d < 100000000 && d - (int) d != 0.0) {
-        d *= 10;
-        i = ((int) d) % 10;
-
-        printf("%f %d\n", d - ((int) d), (d - (int) d) == 0.0);
-
-        strbuf_addc(buf, '0' + i);
-    }
+    char str[80];
+    sprintf(str, "%f", d);
+    strbuf_adds(buf, str);
 }
 
 static void buffer_string(Strbuf *buf, char *str) {

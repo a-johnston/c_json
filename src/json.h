@@ -1,6 +1,6 @@
-#ifndef __CJSON_H
+#ifndef __C_JSON_H
 
-#define __CJSON_H
+#define __C_JSON_H
 
 #include <stdint.h>
 #include <stdio.h>

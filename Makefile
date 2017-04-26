@@ -8,3 +8,6 @@ build: src/json.h src/*.c
 install: lib/libjson.so include/json.h
 	sudo cp lib/libjson.so /usr/lib/
 	sudo cp include/json.h /usr/local/include/
+
+test: test.c
+	gcc test.c -o test -ljson
